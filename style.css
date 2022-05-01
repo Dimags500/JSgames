@@ -1,0 +1,43 @@
+
+
+
+#game-info{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: aliceblue;
+    padding-bottom: 1rem;
+
+}
+#inner-info{
+text-align: center;
+}
+
+#game-page{
+
+background-color: bisque;
+}
+
+
+
+#game-board{
+    display: grid;
+    max-width: 80vh;
+    height: 80vh;
+    margin: auto;
+    grid-gap: 0.5rem;
+    grid-template-columns: repeat(4,1fr);
+    grid-template-rows: repeat(3,1fr);
+
+}
+
+
+.card{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px red solid;
+    background-color: aquamarine;
+
+}
