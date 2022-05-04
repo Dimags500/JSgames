@@ -88,7 +88,7 @@ function cardClick(e) {
           card1.classList.add("cover");
           card2.classList.add("cover");
           reset();
-        }, 1000);
+        }, 1500);
       }
     }
   }
@@ -114,11 +114,13 @@ function endGameCheck(color, cards) {
     cards.splice(colorToRemove, 1);
   }
   if (cards.length == 0) {
-    console.log("------------");
-    let game = confirm("You won , new game ?");
-    if (game) {
-      location.reload();
-    }
+    setTimeout(() => {
+      console.log("------------");
+      let newGame = confirm("You won , new game ?");
+      if (newGame) {
+        location.reload();
+      }
+    }, 300);
   }
 }
 
