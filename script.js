@@ -37,6 +37,8 @@ function cardBuilder(cards, board) {
   for (let i = 0; i < 6; i++) {
     let card = document.createElement("div");
     card.classList.add(cards[i], "card", "cover");
+    card.classList.add(cards[i], "card");
+
     card.addEventListener("click", cardClick);
     board.appendChild(card);
   }
@@ -44,8 +46,22 @@ function cardBuilder(cards, board) {
   for (let i = 0; i < 6; i++) {
     let card = document.createElement("div");
     card.classList.add(cards[i], "card", "cover");
+    card.classList.add(cards[i], "card");
+
     card.addEventListener("click", cardClick);
     board.appendChild(card);
+  }
+
+  random(board);
+}
+
+function random(board) {
+  let cards = board.children;
+
+  for (let i = 0; i < cards.length; i++) {
+    cards[Math.floor(Math.random() * 12)].style.order = Math.floor(
+      Math.random() * 10
+    ).toString();
   }
 }
 
