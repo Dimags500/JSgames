@@ -2,73 +2,130 @@ const startClock = document.getElementById("start-btn");
 startClock.addEventListener("click", startGame);
 const board = document.getElementById("game-board");
 let movesDisplay = document.getElementById("moves");
-let timeDisplay = document.getElementById("time");
+let secondsDisplay = document.getElementById("seconds");
+let minutesDisplay = document.getElementById("minutes");
 
 let moves = 0;
-let stateColor = "";
-let clickDisabled = false;
+let clickCardsDisabled = false;
+let gameStarted = false;
+
+let card1Color = 0;
+let card2Color = 0;
+let card1;
+let card2;
+let step1 = false;
+
+const colors = ["red", "green", "yellow", "pink", "purple", "blue"];
+const cards = [];
+
+for (let i = 0; i < 6; i++) {
+  cards[i] = colors[i];
+}
 
 function startGame(e) {
-  if (!obj.inGame) {
+  if (!gameStarted) {
     timer();
-    obj.inGame = !obj.inGame;
-    cardBuilder(obj, board);
+    gameStarted = !gameStarted;
+    cardBuilder(cards, board);
     e.target.innerHTML = "Reset";
     return;
   }
   location.reload();
 }
 
-const obj = { inGame: false };
-const colors = ["red", "green", "yellow", "pink", "purple", "blue"];
-for (let i = 0; i < 6; i++) {
-  obj[i] = colors[i];
-}
-for (let i = 0; i < 6; i++) {
-  obj[i + 6] = colors[i];
-}
-
-function cardBuilder(obj, board) {
-  for (let i = 0; i < 12; i++) {
+function cardBuilder(cards, board) {
+  for (let i = 0; i < 6; i++) {
     let card = document.createElement("div");
-    card.classList.add(obj[i], "card", "cover");
+    card.classList.add(cards[i], "card", "cover");
+    card.addEventListener("click", cardClick);
+    board.appendChild(card);
+  }
+
+  for (let i = 0; i < 6; i++) {
+    let card = document.createElement("div");
+    card.classList.add(cards[i], "card", "cover");
     card.addEventListener("click", cardClick);
     board.appendChild(card);
   }
 }
 
 function cardClick(e) {
-  console.log("state " + stateColor);
+  if (!clickCardsDisabled) {
+    if (!step1) {
+      card1 = e.target;
+      card1Color = e.target.classList[0];
+      e.target.classList.remove("cover");
+      step1 = true;
+      return;
+    }
+    if (step1) {
+      card2 = e.target;
+      card2Color = e.target.classList[0];
+      e.target.classList.remove("cover");
+      let pairCards = cardCheck(card1Color, card2Color);
 
-  if (!clickDisabled) {
-    moves++;
-    movesDisplay.innerHTML = moves;
-    e.target.classList.remove("cover");
-    stateColor = cardCheck(e.target.classList[0], stateColor);
+      if (!pairCards) {
+        clickCardsDisabled = true;
 
-    if (stateColor != "") {
-      clickDisabled = true;
-
-      setTimeout(() => {
-        e.target.classList.add("cover");
-        clickDisabled = false;
-      }, 2000);
+        setTimeout(() => {
+          clickCardsDisabled = false;
+          card1.classList.add("cover");
+          card2.classList.add("cover");
+          reset();
+        }, 1000);
+      }
     }
   }
 }
 
-function cardCheck(color, stateColor) {
-  if (color == stateColor) {
-    return "";
+function cardCheck(card1Color, card2Color) {
+  movesDisplay.innerHTML = moves += 1;
+  if (card1Color == card2Color) {
+    let cardsColorArray = document.getElementsByClassName(card1Color);
+    for (let i = 0; i < cardsColorArray.length; i++) {
+      cardsColorArray[i].removeEventListener("click", cardClick);
+    }
+    endGameCheck(card1Color, cards);
+    reset();
+    return true;
   }
-  return color;
+  return false;
+}
+
+function endGameCheck(color, cards) {
+  if (cards.length > 0) {
+    let colorToRemove = cards.indexOf(color);
+    cards.splice(colorToRemove, 1);
+  }
+  if (cards.length == 0) {
+    console.log("------------");
+    let game = confirm("You won , new game ?");
+    if (game) {
+      location.reload();
+    }
+  }
+}
+
+function reset() {
+  step1 = false;
+  card1Color = "";
+  card2Color = "";
+  card1 = null;
+  card2 = null;
 }
 
 function timer() {
   let start = Date.now();
-
+  let seconds = 0;
+  let minutes = 0;
   setInterval(() => {
+    if (seconds >= 59) {
+      minutes++;
+      start = Date.now();
+    }
     let delta = Date.now() - start;
-    timeDisplay.innerHTML = Math.floor(delta / 1000);
+    seconds = Math.floor(delta / 1000);
+    secondsDisplay.innerHTML = seconds;
+    minutesDisplay.innerHTML = minutes;
   }, 1000);
 }
