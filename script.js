@@ -5,10 +5,11 @@ let movesDisplay = document.getElementById("moves");
 let secondsDisplay = document.getElementById("seconds");
 let minutesDisplay = document.getElementById("minutes");
 
+let timer;
+let startTimer = true;
 let moves = 0;
 let clickCardsDisabled = false;
 let gameStarted = false;
-
 let card1Color = 0;
 let card2Color = 0;
 let card1;
@@ -16,18 +17,14 @@ let card2;
 let step1 = false;
 
 const colors = ["red", "green", "yellow", "pink", "purple", "blue"];
-const cards = [];
+const cards = [...colors];
 
-for (let i = 0; i < 6; i++) {
-  cards[i] = colors[i];
-}
-
-function startGame(e) {
+function startGame() {
   if (!gameStarted) {
-    timer();
+    timeFunction();
     gameStarted = !gameStarted;
     cardBuilder(cards, board);
-    e.target.innerHTML = "Reset";
+    startClock.innerHTML = "Reset";
     return;
   }
   location.reload();
@@ -37,8 +34,6 @@ function cardBuilder(cards, board) {
   for (let i = 0; i < 6; i++) {
     let card = document.createElement("div");
     card.classList.add(cards[i], "card", "cover");
-    card.classList.add(cards[i], "card");
-
     card.addEventListener("click", cardClick);
     board.appendChild(card);
   }
@@ -46,8 +41,6 @@ function cardBuilder(cards, board) {
   for (let i = 0; i < 6; i++) {
     let card = document.createElement("div");
     card.classList.add(cards[i], "card", "cover");
-    card.classList.add(cards[i], "card");
-
     card.addEventListener("click", cardClick);
     board.appendChild(card);
   }
@@ -87,7 +80,7 @@ function cardClick(e) {
           clickCardsDisabled = false;
           card1.classList.add("cover");
           card2.classList.add("cover");
-          reset();
+          resetMove();
         }, 1500);
       }
     }
@@ -102,7 +95,7 @@ function cardCheck(card1Color, card2Color) {
       cardsColorArray[i].removeEventListener("click", cardClick);
     }
     endGameCheck(card1Color, cards);
-    reset();
+    resetMove();
     return true;
   }
   return false;
@@ -115,16 +108,12 @@ function endGameCheck(color, cards) {
   }
   if (cards.length == 0) {
     setTimeout(() => {
-      console.log("------------");
-      let newGame = confirm("You won , new game ?");
-      if (newGame) {
-        location.reload();
-      }
-    }, 300);
+      confirm("You won , new game ?") ? resetGame() : null;
+    }, 100);
   }
 }
 
-function reset() {
+function resetMove() {
   step1 = false;
   card1Color = "";
   card2Color = "";
@@ -132,11 +121,28 @@ function reset() {
   card2 = null;
 }
 
-function timer() {
+function resetGame() {
+  gameStarted = false;
+  board.innerHTML = "";
+  moves = 0;
+  movesDisplay.innerHTML = "";
+  secondsDisplay.innerHTML = "";
+  minutesDisplay.innerHTML = "";
+
+  for (let i = 0; i < 6; i++) {
+    cards[i] = colors[i];
+  }
+
+  clearInterval(timer);
+  startGame();
+}
+
+function timeFunction() {
   let start = Date.now();
   let seconds = 0;
   let minutes = 0;
-  setInterval(() => {
+
+  timer = setInterval(() => {
     if (seconds >= 59) {
       minutes++;
       start = Date.now();
